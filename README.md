@@ -1,5 +1,5 @@
 # BostonCrimeReport
-### This the final project for a DS2000 course at Northeastern University.
+### This the final project for a DS2000 course at Northeastern University. It is currently in progress.
 
 Given a data set (selected by student groups), create descriptive graphs and generate insights. The students are to explain the topic and why it is significant. To be significant, the project should address some issue or topic that is important scientifically or culturally.
 
