@@ -1,10 +1,14 @@
+Take me to the [project proposal](#proposal)
+
+Take me to the [installation instructions](#installation)
+
 # BostonCrimeReport
 ### This the final project for a DS2000 course at Northeastern University. It is currently in progress.
 
 Given a data set (selected by student groups), create descriptive graphs and generate insights. The students are to explain the topic and why it is significant. To be significant, the project should address some issue or topic that is important scientifically or culturally.
 
 Below is a part of the submitted propoal for the project
-
+<a name="proposal"></a>
 > DS2000 Project Proposal: Crime Rates in Boston Dashboard
 > 
 > Introduction: 
@@ -19,3 +23,27 @@ Below is a part of the submitted propoal for the project
 > 
 > Data Source: https://data.boston.gov/dataset/crime-incident-reports-august-2015-to-date-source-new-system/resource/313e56df-6d77-49d2-9c49-ee411f10cf58
 
+<a name="installation"></a>
+### Installation
+Since this project is aimed at beginner programmers, I will describe how to complete the setup necessary to run this code. First, you will need to install the dependencies of the program. The following instructions are for Mac users.
+1. First, enter your virtual environment. If using the *anaconda* distribution, you can do this with the following command in your terminal window:
+```
+conda activate YourVirtualEnvironmentNameGoesHere
+```
+2. Install the packages! Copy and paste the below commands, one at a time into terminal. If you're using the Anaconda distribution, you should already have Pandas installed automatically, so you don't need to install it.
+```
+conda install -c conda-forge dash
+```
+```
+conda install -c plotly plotly=5.11.0
+```
+```
+conda install -c conda-forge shapely
+```
+
+3. Download the app.py file to a place of your choosing.
+
+4. Run the app.py file.
+- Note: The dashboard should update automatically upon saving the file. If you try running *app.py* in Spyder or another IDE multiple times, you may get an error message that the link is already busy. To get around this, you can run the file in terminal instead.
+
+5. Visit the provided link in your web browser!
