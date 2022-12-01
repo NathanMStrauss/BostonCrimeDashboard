@@ -4,18 +4,21 @@
 Created on Fri Oct 21 22:21:48 2022
 DS2001 Group Project
 
-This is the app container for the code necessary to create a dashboard
+This is the app container with the code necessary to create a dashboard that
+is hosted locally and is the final product of the group's efforts.
 """
 
 # Run this app with `python app.py` and
 # visit http://127.0.0.1:8050/ in your web browser.
 
+# define constants
 MONTHS = {1 :"January",2:"February",3:"March",4:"April",5:"May",
           6:"June",7:"July",8:"August",9:"September",10:"October",
           11:"November",12:"December"}
 CRIME_DATA_LINK = 'https://data.boston.gov/dataset/crime-incident-reports-august-2015-to-date-source-new-system/resource/313e56df-6d77-49d2-9c49-ee411f10cf58'
 GEOJSON_FILE_PATH = 'https://bostonopendata-boston.opendata.arcgis.com/datasets/boston::planning-districts.geojson?outSR=%7B%22latestWkid%22%3A2249%2C%22wkid%22%3A102686%7D'
 
+# import everything that's necessary
 from dash import Dash, dcc, html, Input, Output
 import plotly.express as px
 import pandas as pd
@@ -24,6 +27,21 @@ import json
 from shapely.geometry import Point, shape
 
 def read_data(filename):
+    """
+    Reads in csv data to a Pandas dataframe. Converts some values to different
+    types upon reading.
+
+    Parameters
+    ----------
+    filename : string
+        Name of the file/filepath that the user would like to read in.
+
+    Returns
+    -------
+    df : Pandas dataframe
+        A dataframe containing the values in desired types.
+
+    """
     col_types = {'YEAR': int,'MONTH': int, 'HOUR': int, 
                  'SHOOTING': int, 'OFFENSE_CODE': int, 
                  'Lat': float, 'Long': float}
@@ -31,6 +49,24 @@ def read_data(filename):
     return df
 
 def load_geojson(link):
+    """
+    Loads and reads geographical geojson information data.
+
+    Parameters
+    ----------
+    link : string
+        Name of the file/filepath that the user would like to read in..
+
+    Returns
+    -------
+    area : dictionary 
+        The dictionary containing the names, vertices, and other relevant
+        information.
+    neighborhood_map : dictionary
+        Dictionary containing all of the names of the locations and the
+        order in which they appear.
+
+    """
     with urlopen(link) as response:
         area = json.load(response)
         
@@ -42,6 +78,24 @@ def load_geojson(link):
     return area, neighborhood_map
 
 def check_place(row, geoJson):
+    """
+    Using the coordinates given by each incident, check which crime occurred
+    in which neighborhood of Boston.
+
+    Parameters
+    ----------
+    row : dataframe
+        One instance from a large dataframe.
+    geoJson : dictionary
+        The dictionary containing the names, geographical vertices, 
+        and other relevant information.
+
+    Returns
+    -------
+    string
+        The name of the place that the point has been calculated to be within.
+
+    """
     Boston = geoJson
     point = Point(row['Long'],row['Lat'])
     for feature in Boston['features']:
@@ -52,6 +106,22 @@ def check_place(row, geoJson):
     return 'DNE'
 
 def counting_values_df(df):
+    """
+    Count the number of unique places and the number of crimes that occur 
+    in each place given a dataframe.
+
+    Parameters
+    ----------
+    df : dataframe
+        Pandas dataframe containing all of the values that the user 
+        would like to tabulate.
+
+    Returns
+    -------
+    new_df : dataframe
+        Pandas dataframe that maps the counts to the values specified..
+
+    """
     #count the number of crimes
     num_crimes = df.value_counts('Neighborhood')
 
@@ -59,23 +129,40 @@ def counting_values_df(df):
     values = []
     for district, value in num_crimes.items():
         values.append([district, value]) 
-    df_choro = pd.DataFrame(values, columns = ['Neighborhood', 'NUM_REPORTS'])
+    new_df = pd.DataFrame(values, columns = ['Neighborhood', 'NUM_REPORTS'])
     
-    return df_choro
+    return new_df
 
 def generate_choropleth(df_choro, place_Json):
-    #generate a choropleth map based on number of crimes
+    """
+    Generate a plotly express choropleth graph.
+
+    Parameters
+    ----------
+    df_choro : Dataframe
+        Pandas dataframe that contains the relevant information to plot.
+    place_Json : dictionary
+        The dictionary containing the names, geographical vertices, 
+        and other relevant information.
+
+    Returns
+    -------
+    choropleth_fig : plotly express figure
+        The choropleth figure to be graphed.
+
+    """
+    # generate a choropleth map based on number of crimes
     choropleth_fig = px.choropleth(
         df_choro, #crime database
-        locations = 'Neighborhood', #define the limits on the map/geography
-        geojson = place_Json, #shape information
-        color = 'NUM_REPORTS', #defining the color of the scale through the database
-        # hover_name = 'Neighborhood', #the information in the box
+        locations = 'Neighborhood', # define the limits on the map/geography
+        geojson = place_Json, # shape information
+        color = 'NUM_REPORTS', # defining the color of the scale through the database
         hover_data =['NUM_REPORTS'],
         scope="usa",
         featureidkey = 'ID',
-        title = "Crime in Boston", #title of the map
+        title = "Crime in Boston", # title of the map
     )
+    # make the graph pretty and add some styling to it!
     choropleth_fig.update_geos(fitbounds = "locations", visible = False)
     choropleth_fig.update_layout(paper_bgcolor="#236C90", plot_bgcolor="#F4F4F8")
     choropleth_fig.update_layout(margin=dict(t=0, r=0, b=0, l=20))
@@ -89,9 +176,25 @@ def generate_choropleth(df_choro, place_Json):
     return choropleth_fig
     
 def generate_scatterplot(df):
+    """
+    Generate a plotly express scatterplot graph.
+
+    Parameters
+    ----------
+    df : Dataframe
+        Pandas dataframe that contains the relevant information to plot..
+
+    Returns
+    -------
+    scatter_fig : plotly express figure
+        The scatterplot figure to be graphed.
+
+    """
+    # make the scatterplot
     scatter_fig = px.scatter_mapbox(df, lat="Lat", lon="Long", hover_name = 'INCIDENT_NUMBER', 
                             hover_data = ['Neighborhood', 'OCCURRED_ON_DATE', 'OFFENSE_DESCRIPTION'])
 
+    # make the scatterplot pretty!
     scatter_fig.update_layout(mapbox_style="open-street-map")
     scatter_fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
     scatter_fig.update_mapboxes(center={'lat': 42.361145, 'lon': -71.057083})
@@ -99,6 +202,20 @@ def generate_scatterplot(df):
     return scatter_fig
 
 def read_crimetype(filename):
+    """
+    Reads integer values from a file and add them to a list.
+
+    Parameters
+    ----------
+    filename : string
+        Name of the file the user wants to read.
+
+    Returns
+    -------
+    all_codes : list
+        List of all of the values in the file.
+
+    """
     with open(filename, 'r') as infile:
         codes = infile.readlines()
         all_codes = []
@@ -119,15 +236,19 @@ Boston, neighborhoods = load_geojson(GEOJSON_FILE_PATH)
 with open('Planning_Districts.geojson') as response:
     area = json.load(response)
     
+# filter out the places we are not able to graph
 crime_df = crime_df[(crime_df.Lat != 0.0) & (crime_df.Long != 0.0)]
+
+# add the neighborhoods to each row in the dataset
 crime_df['Neighborhood'] = crime_df.apply(lambda row: check_place(row, geoJson = Boston), axis=1)    
     
-df_choro = counting_values_df(crime_df)
 
 # generate graphs
+df_choro = counting_values_df(crime_df)
 choropleth_fig = generate_choropleth(df_choro, Boston)
 scatter_fig = generate_scatterplot(crime_df)
 
+# read crime types
 crime_type = {}
 crime_type['ppl'] = read_crimetype('persons.txt')
 crime_type['prop'] = read_crimetype('property.txt')
@@ -235,7 +356,8 @@ app.layout = html.Div(children=[
     )
 
 ])
-    
+
+# if there are any interactions with the dashboard, make sure it's reflected here!    
 @app.callback(
     Output(component_id='choropleth-crime-graph', component_property='figure'),
     Output(component_id='scatterplot-crime-graph', component_property='figure'),
@@ -244,6 +366,26 @@ app.layout = html.Div(children=[
     Input(component_id='crimes_against', component_property='value'),
 )
 def update_graphs(time, month, crimes_against):
+    """
+    Update the graphs that are displayed on the dashboard.
+
+    Parameters
+    ----------
+    time : string
+        The time of day the user is selecting for.
+    month : int
+        The number of the month the user is selecting for.
+    crimes_against : list of strings
+        The types of crimes to be considered when filtering the data.
+
+    Returns
+    -------
+    updated_choro_fig : plotly express figure
+        The choropleth figure to be graphed.
+    updated_scatter_fig : plotly express figure
+        The scatterplot figure to be graphed.
+
+    """
     df = crime_df
     
     # check for time of day
@@ -262,13 +404,16 @@ def update_graphs(time, month, crimes_against):
     
     # check for checkbox selection
     filter3_df = pd.DataFrame()
-    if len(crimes_against) < 3:
+    if len(crimes_against) == 0:
+        filter3_df = filter2_df
+    elif len(crimes_against) < 3:
         for val in crimes_against:
             temp_df = filter2_df[filter2_df.OFFENSE_CODE.isin(crime_type[val])]
             filter3_df = pd.concat([filter3_df,temp_df])
     else:
         filter3_df = filter2_df
     
+    # update the figures
     updated_df = counting_values_df(filter3_df)
     updated_choro_fig = generate_choropleth(updated_df, Boston)
     updated_choro_fig.update_layout(transition_duration=500)
