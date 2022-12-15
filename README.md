@@ -3,7 +3,7 @@ Take me to the [project proposal](#proposal)
 Take me to the [installation instructions](#installation)
 
 # BostonCrimeReport
-### This the final project for a DS2000 course at Northeastern University. It is currently in progress.
+### This the final project for a DS2000 course at Northeastern University. It was recently completed.
 
 Given a data set (selected by student groups), create descriptive graphs and generate insights. The students are to explain the topic and why it is significant. To be significant, the project should address some issue or topic that is important scientifically or culturally.
 
