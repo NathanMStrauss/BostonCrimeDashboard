@@ -5,6 +5,8 @@ Take me to the [installation instructions](#installation)
 # BostonCrimeDashboard
 ### This the final project for a DS2000 course at Northeastern University. It was recently completed.
 
+There are many updates that could further improve it (such as styling with CSS), which may be made in the future, though such updates are currently on hiatus.
+
 Given a data set (selected by student groups), create descriptive graphs and generate insights. The students are to explain the topic and why it is significant. To be significant, the project should address some issue or topic that is important scientifically or culturally.
 
 Below is a part of the submitted propoal for the project
