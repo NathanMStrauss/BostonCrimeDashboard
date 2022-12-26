@@ -16,13 +16,12 @@ MONTHS = {1 :"January",2:"February",3:"March",4:"April",5:"May",
           6:"June",7:"July",8:"August",9:"September",10:"October",
           11:"November",12:"December"}
 CRIME_DATA_LINK = 'https://data.boston.gov/dataset/crime-incident-reports-august-2015-to-date-source-new-system/resource/313e56df-6d77-49d2-9c49-ee411f10cf58'
-GEOJSON_FILE_PATH = 'https://bostonopendata-boston.opendata.arcgis.com/datasets/boston::planning-districts.geojson?outSR=%7B%22latestWkid%22%3A2249%2C%22wkid%22%3A102686%7D'
+GEOJSON_FILENAME = 'Planning_Districts.geojson'
 
 # import everything that's necessary
 from dash import Dash, dcc, html, Input, Output
 import plotly.express as px
 import pandas as pd
-from urllib.request import urlopen
 import json
 from shapely.geometry import Point, shape
 
@@ -48,7 +47,7 @@ def read_data(filename):
     df = pd.read_csv(filename, header=0, converters = col_types, engine="python")
     return df
 
-def load_geojson(link):
+def load_geojson(filename):
     """
     Loads and reads geographical geojson information data.
 
@@ -67,7 +66,7 @@ def load_geojson(link):
         order in which they appear.
 
     """
-    with urlopen(link) as response:
+    with open(filename,'r') as response:
         area = json.load(response)
         
     neighborhood_map = {}
@@ -230,7 +229,7 @@ def read_crimetype(filename):
 crime_df = read_data('BosCrime.csv')
 
 # read district geography info
-Boston, neighborhoods = load_geojson(GEOJSON_FILE_PATH)
+Boston, neighborhoods = load_geojson(GEOJSON_FILENAME)
 
 # get the geoJson map
 with open('Planning_Districts.geojson') as response:
