@@ -272,7 +272,9 @@ app.layout = html.Div(children=[
                 id="description",
                 children=["This the final project for a DS2000 course at \
                 Northeastern University investigating crime statistics in \
-                Boston Neighborhoods. It is currently in progress. The geodata can be found ",
+                Boston Neighborhoods. Though the project is completed, there \
+                are still many updates to be made thay come about in the \
+                future. The geodata can be found ",
                 html.A("here", href='https://data.boston.gov/dataset/planning-districts', target="_blank"),
                 ". And the crime data can be found ",
                 html.A("here", href=CRIME_DATA_LINK, target="_blank"),
